@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="client/css/style.css">
+    <title>Login</title>
+    <style type="text/css">
+        .jumbotron {
+            background: DarkSeaGreen !important;
+            text-align: center;
+        }
+        .container {
+            max-width: 330px;
+            padding: 15px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="jumbotron">
+        <h2>Login Page</h2>
+        <p>Please enter your user name and password. Both are case sensitive.</p>
+    </div>
+    <div class="container">
+        <form action="/login" method="post">
+            <label for="uname"><b>User:</b></label>
+            <input type="text" placeholder="Enter Username" name="uname" required>
+
+            <label for="psw"><b>Password:</b></label>
+            <input type="password" placeholder="Enter Password" name="psw" required>
+
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
+        </form>
+    </div>
+
+    <script>
+        document.querySelector('form').addEventListener('submit', function(event) {
+            event.preventDefault();
+        
+            var username = document.querySelector('input[name="uname"]').value;
+            var password = document.querySelector('input[name="psw"]').value;
+        
+            fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ uname: username, psw: password })
+            })
+            .then(function(response) {
+                if (response.status === 401) {
+                    return response.json().then(function(data) {
+                        throw new Error(data.error);
+                    });
+                } else if (!response.ok) {
+                    throw new Error('Server response was not ok.');
+                } else {
+                    return response.json();
+                }
+            })
+            .then(function(data) {
+                if (data.success) {
+                    window.location.href = '/schedule';
+                }
+            })
+            .catch(function(error) {
+                // Display the error message
+                alert(error.message);
+            });
+        });
+    </script>
+</body>
+</html>
